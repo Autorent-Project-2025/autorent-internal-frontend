@@ -23,12 +23,11 @@ npm run dev
 
 Пример переменных: [.env.example](./.env.example).
 
-## Прокси API в dev
+## Вызовы API
 
-- `/auth` -> `VITE_API_URL`
-- `/tickets` -> `VITE_API_URL`
-
-Конфигурация: [vite.config.ts](./vite.config.ts).
+- Все запросы выполняются напрямую через сервис `apiClient`.
+- Базовый URL берется из `VITE_API_URL`.
+- Проксирование через Vite не используется.
 
 ## Маршруты
 
