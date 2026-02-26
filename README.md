@@ -1,40 +1,50 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Autorent Internal Frontend
 
-node_modules
-.DS_Store
-dist
-dist-ssr
-coverage
-*.local
+CRM-интерфейс для внутренней команды Autorent на **Vue 3 + TypeScript + Vite**.
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+## Стек
 
-*.tsbuildinfo
+- Vue 3 + Vue Router
+- @tanstack/vue-query
+- Axios
+- Zod
 
-.eslintcache
+## Запуск в разработке
 
-# Cypress
-/cypress/videos/
-/cypress/screenshots/
+```bash
+npm install
+npm run dev
+```
 
-# Vitest
-__screenshots__/
+Настройки берутся из `.env`:
 
-# Env variables
-.env 
-.env.local
+- `VITE_API_URL` — адрес бэкенда (по умолчанию `http://localhost:5253`)
+- `VITE_FRONTEND_PORT` — порт фронтенда (по умолчанию `5173`)
+
+Пример переменных: [.env.example](./.env.example).
+
+## Прокси API в dev
+
+- `/auth` -> `VITE_API_URL`
+- `/tickets` -> `VITE_API_URL`
+
+Конфигурация: [vite.config.ts](./vite.config.ts).
+
+## Маршруты
+
+Публичные:
+
+- `/login`
+- `/register`
+
+Internal:
+
+- `/internal/tickets`
+- `/internal/tickets/:type/:id`
+
+## Примечания
+
+- Токен хранится в памяти и в `localStorage`.
+- Роль internal определяется проверкой `GET /tickets?page=1&pageSize=1`.
+- При `401` сессия очищается и выполняется переход на `/login`.
+- Создание тикетов во фронтенде отключено: система предназначена для обработки входящих клиентских тикетов.
