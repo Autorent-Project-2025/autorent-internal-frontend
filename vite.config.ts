@@ -4,7 +4,6 @@ import vue from "@vitejs/plugin-vue";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const apiUrl = env.VITE_API_URL || "http://localhost:5253";
   const parsedPort = Number.parseInt(env.VITE_FRONTEND_PORT || "5173", 10);
   const frontendPort = Number.isFinite(parsedPort) ? parsedPort : 5173;
 
@@ -17,16 +16,6 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: frontendPort,
-      proxy: {
-        "/auth": {
-          target: apiUrl,
-          changeOrigin: true,
-        },
-        "/tickets": {
-          target: apiUrl,
-          changeOrigin: true,
-        },
-      },
     },
   };
 });
