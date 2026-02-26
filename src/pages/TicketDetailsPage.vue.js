@@ -21,6 +21,7 @@ const hasValidParams = computed(() => {
 });
 const backPath = computed(() => "/internal/tickets");
 const canManage = computed(() => state.isInternal === true);
+const canApproveAccountRegister = computed(() => routeType.value === "account-register");
 const updateForm = reactive({
     status: 0,
     managerComments: "",
@@ -88,6 +89,18 @@ const detailsError = computed(() => {
         404: "Тикет не найден",
     }, "Не удалось загрузить детали тикета.");
 });
+const ticket = computed(() => detailsQuery.data.value ?? null);
+const hasAdditionalPayload = computed(() => {
+    if (!ticket.value) {
+        return false;
+    }
+    return (ticket.value.relatedAccount !== null ||
+        ticket.value.bookingId !== null ||
+        ticket.value.withdrawalAmount !== null);
+});
+const additionalSectionTitle = computed(() => {
+    return routeType.value === "account-register" ? "Сведения об аккаунте" : "Дополнительные данные";
+});
 async function onUpdate() {
     actionError.value = "";
     actionSuccess.value = "";
@@ -143,15 +156,16 @@ let __VLS_components;
 let __VLS_intrinsics;
 let __VLS_directives;
 __VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
-    ...{ class: "page panel" },
-    ...{ style: {} },
+    ...{ class: "page panel ticket-details-page" },
 });
 /** @type {__VLS_StyleScopedClasses['page']} */ ;
 /** @type {__VLS_StyleScopedClasses['panel']} */ ;
+/** @type {__VLS_StyleScopedClasses['ticket-details-page']} */ ;
 __VLS_asFunctionalElement1(__VLS_intrinsics.header, __VLS_intrinsics.header)({
-    ...{ class: "panel-header" },
+    ...{ class: "panel-header ticket-details-header" },
 });
 /** @type {__VLS_StyleScopedClasses['panel-header']} */ ;
+/** @type {__VLS_StyleScopedClasses['ticket-details-header']} */ ;
 __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({});
 __VLS_asFunctionalElement1(__VLS_intrinsics.h1, __VLS_intrinsics.h1)({
     ...{ class: "section-title" },
@@ -212,254 +226,433 @@ if (__VLS_ctx.detailsQuery.isPending.value) {
     });
     /** @type {__VLS_StyleScopedClasses['muted-text']} */ ;
 }
-else if (__VLS_ctx.detailsQuery.data.value) {
+else if (__VLS_ctx.ticket) {
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
         ...{ class: "stack" },
     });
     /** @type {__VLS_StyleScopedClasses['stack']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.section, __VLS_intrinsics.section)({
+        ...{ class: "ticket-overview" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-overview']} */ ;
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "detail-grid" },
+        ...{ class: "ticket-overview-group" },
     });
-    /** @type {__VLS_StyleScopedClasses['detail-grid']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.article, __VLS_intrinsics.article)({
-        ...{ class: "panel" },
-        ...{ style: {} },
-    });
-    /** @type {__VLS_StyleScopedClasses['panel']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.h2, __VLS_intrinsics.h2)({
-        ...{ class: "section-title" },
-        ...{ style: {} },
-    });
-    /** @type {__VLS_StyleScopedClasses['section-title']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dl, __VLS_intrinsics.dl)({
-        ...{ class: "kv-list" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-list']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-group']} */ ;
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "kv-row" },
+        ...{ class: "ticket-overview-item" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-        ...{ class: "kv-key" },
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-overview-label" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-        ...{ class: "kv-value" },
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-overview-value" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-    (__VLS_ctx.detailsQuery.data.value.id);
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-value']} */ ;
+    (__VLS_ctx.ticket.id);
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "kv-row" },
+        ...{ class: "ticket-overview-item" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-        ...{ class: "kv-key" },
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-overview-label" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-        ...{ class: "kv-value" },
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-overview-value" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-    (__VLS_ctx.detailsQuery.data.value.title);
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-value']} */ ;
+    (__VLS_ctx.ticketTypeLabel(__VLS_ctx.ticket.type));
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "kv-row" },
+        ...{ class: "ticket-overview-group" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-        ...{ class: "kv-key" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-        ...{ class: "kv-value" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-    (__VLS_ctx.detailsQuery.data.value.description);
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-group']} */ ;
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "kv-row" },
+        ...{ class: "ticket-overview-item" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-        ...{ class: "kv-key" },
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-overview-label" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-        ...{ class: "kv-value" },
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-overview-value" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-    (__VLS_ctx.ticketTypeLabel(__VLS_ctx.detailsQuery.data.value.type));
-    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "kv-row" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-        ...{ class: "kv-key" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-        ...{ class: "kv-value" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-value']} */ ;
     __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
         ...{ class: "status-pill" },
-        ...{ class: (`status-${__VLS_ctx.detailsQuery.data.value.status}`) },
+        ...{ class: (`status-${__VLS_ctx.ticket.status}`) },
     });
     /** @type {__VLS_StyleScopedClasses['status-pill']} */ ;
-    (__VLS_ctx.ticketStatusLabel(__VLS_ctx.detailsQuery.data.value.status));
+    (__VLS_ctx.ticketStatusLabel(__VLS_ctx.ticket.status));
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "kv-row" },
+        ...{ class: "ticket-overview-item" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-        ...{ class: "kv-key" },
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-overview-label" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-        ...{ class: "kv-value" },
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-overview-value" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-    (__VLS_ctx.detailsQuery.data.value.ownerEmail || "Not set");
+    /** @type {__VLS_StyleScopedClasses['ticket-overview-value']} */ ;
+    (__VLS_ctx.ticket.ownerEmail || "Not set");
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "kv-row" },
+        ...{ class: "detail-grid ticket-detail-grid" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-        ...{ class: "kv-key" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-        ...{ class: "kv-value" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-    (__VLS_ctx.formatDateTime(__VLS_ctx.detailsQuery.data.value.createdAt));
-    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "kv-row" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-        ...{ class: "kv-key" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-        ...{ class: "kv-value" },
-    });
-    /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-    (__VLS_ctx.formatDateTime(__VLS_ctx.detailsQuery.data.value.updatedAt));
+    /** @type {__VLS_StyleScopedClasses['detail-grid']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-detail-grid']} */ ;
     __VLS_asFunctionalElement1(__VLS_intrinsics.article, __VLS_intrinsics.article)({
-        ...{ class: "panel" },
-        ...{ style: {} },
+        ...{ class: "panel ticket-card" },
     });
     /** @type {__VLS_StyleScopedClasses['panel']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-card']} */ ;
     __VLS_asFunctionalElement1(__VLS_intrinsics.h2, __VLS_intrinsics.h2)({
-        ...{ class: "section-title" },
-        ...{ style: {} },
+        ...{ class: "ticket-card-title" },
     });
-    /** @type {__VLS_StyleScopedClasses['section-title']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dl, __VLS_intrinsics.dl)({
-        ...{ class: "kv-list" },
+    /** @type {__VLS_StyleScopedClasses['ticket-card-title']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "ticket-extra-grid ticket-main-grid" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-list']} */ ;
-    if (__VLS_ctx.detailsQuery.data.value.relatedAccount) {
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-grid']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-grid']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "ticket-extra-item ticket-main-item" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-extra-label ticket-main-label" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-extra-value ticket-main-value" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+    (__VLS_ctx.ticket.id);
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "ticket-extra-item ticket-main-item" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-extra-label ticket-main-label" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-extra-value ticket-main-value" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+    (__VLS_ctx.ticket.title);
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "ticket-extra-item ticket-main-item" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-extra-label ticket-main-label" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-extra-value ticket-main-value" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+    (__VLS_ctx.ticket.description);
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "ticket-extra-item ticket-main-item" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-extra-label ticket-main-label" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-extra-value ticket-main-value" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+    (__VLS_ctx.ticketTypeLabel(__VLS_ctx.ticket.type));
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "ticket-extra-item ticket-main-item" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-extra-label ticket-main-label" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-extra-value ticket-main-value ticket-main-value-status" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-value-status']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "status-pill" },
+        ...{ class: (`status-${__VLS_ctx.ticket.status}`) },
+    });
+    /** @type {__VLS_StyleScopedClasses['status-pill']} */ ;
+    (__VLS_ctx.ticketStatusLabel(__VLS_ctx.ticket.status));
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "ticket-extra-item ticket-main-item" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-extra-label ticket-main-label" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-extra-value ticket-main-value" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+    (__VLS_ctx.ticket.ownerEmail || "Not set");
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "ticket-extra-item ticket-main-item" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-extra-label ticket-main-label" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-extra-value ticket-main-value" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+    (__VLS_ctx.formatDateTime(__VLS_ctx.ticket.createdAt));
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "ticket-extra-item ticket-main-item" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-extra-label ticket-main-label" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+        ...{ class: "ticket-extra-value ticket-main-value" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+    (__VLS_ctx.formatDateTime(__VLS_ctx.ticket.updatedAt));
+    __VLS_asFunctionalElement1(__VLS_intrinsics.article, __VLS_intrinsics.article)({
+        ...{ class: "panel ticket-card ticket-card-secondary" },
+    });
+    /** @type {__VLS_StyleScopedClasses['panel']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-card']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-card-secondary']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.h2, __VLS_intrinsics.h2)({
+        ...{ class: "ticket-card-title" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-card-title']} */ ;
+    (__VLS_ctx.additionalSectionTitle);
+    if (__VLS_ctx.hasAdditionalPayload) {
         __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-            ...{ class: "kv-row" },
+            ...{ class: "ticket-extra-grid ticket-main-grid" },
         });
-        /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-            ...{ class: "kv-key" },
-        });
-        /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-            ...{ class: "kv-value" },
-        });
-        /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-        (__VLS_ctx.detailsQuery.data.value.relatedAccount.name);
-        (__VLS_ctx.detailsQuery.data.value.relatedAccount.ownerUserId);
-        (__VLS_ctx.formatDateTime(__VLS_ctx.detailsQuery.data.value.relatedAccount.registrationDate));
+        /** @type {__VLS_StyleScopedClasses['ticket-extra-grid']} */ ;
+        /** @type {__VLS_StyleScopedClasses['ticket-main-grid']} */ ;
+        if (__VLS_ctx.ticket.relatedAccount) {
+            __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+                ...{ class: "ticket-extra-item ticket-main-item" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+                ...{ class: "ticket-extra-label ticket-main-label" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+                ...{ class: "ticket-extra-value ticket-main-value" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+            (__VLS_ctx.ticket.relatedAccount.name);
+            __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+                ...{ class: "ticket-extra-item ticket-main-item" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+                ...{ class: "ticket-extra-label ticket-main-label" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+                ...{ class: "ticket-extra-value ticket-main-value" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+            (__VLS_ctx.ticket.relatedAccount.ownerUserId);
+            __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+                ...{ class: "ticket-extra-item ticket-main-item" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+                ...{ class: "ticket-extra-label ticket-main-label" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+                ...{ class: "ticket-extra-value ticket-main-value" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+            (__VLS_ctx.formatDateTime(__VLS_ctx.ticket.relatedAccount.registrationDate));
+        }
+        if (__VLS_ctx.ticket.bookingId !== null) {
+            __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+                ...{ class: "ticket-extra-item ticket-main-item" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+                ...{ class: "ticket-extra-label ticket-main-label" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+                ...{ class: "ticket-extra-value ticket-main-value" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+            (__VLS_ctx.ticket.bookingId);
+        }
+        if (__VLS_ctx.ticket.withdrawalAmount !== null) {
+            __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+                ...{ class: "ticket-extra-item ticket-main-item" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+                ...{ class: "ticket-extra-label ticket-main-label" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+            __VLS_asFunctionalElement1(__VLS_intrinsics.strong, __VLS_intrinsics.strong)({
+                ...{ class: "ticket-extra-value ticket-main-value" },
+            });
+            /** @type {__VLS_StyleScopedClasses['ticket-extra-value']} */ ;
+            /** @type {__VLS_StyleScopedClasses['ticket-main-value']} */ ;
+            (__VLS_ctx.formatMoney(__VLS_ctx.ticket.withdrawalAmount));
+        }
     }
-    if (__VLS_ctx.detailsQuery.data.value.bookingId) {
-        __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-            ...{ class: "kv-row" },
+    else {
+        __VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({
+            ...{ class: "ticket-extra-empty" },
         });
-        /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-            ...{ class: "kv-key" },
-        });
-        /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-            ...{ class: "kv-value" },
-        });
-        /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-        (__VLS_ctx.detailsQuery.data.value.bookingId);
-    }
-    if (__VLS_ctx.detailsQuery.data.value.withdrawalAmount !== null) {
-        __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-            ...{ class: "kv-row" },
-        });
-        /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-            ...{ class: "kv-key" },
-        });
-        /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-            ...{ class: "kv-value" },
-        });
-        /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-        (__VLS_ctx.formatMoney(__VLS_ctx.detailsQuery.data.value.withdrawalAmount));
+        /** @type {__VLS_StyleScopedClasses['ticket-extra-empty']} */ ;
     }
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "kv-row" },
+        ...{ class: "ticket-extra-item ticket-main-item ticket-comment-item" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-row']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dt, __VLS_intrinsics.dt)({
-        ...{ class: "kv-key" },
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-item']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-item']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-comment-item']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+        ...{ class: "ticket-extra-label ticket-main-label" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-key']} */ ;
-    __VLS_asFunctionalElement1(__VLS_intrinsics.dd, __VLS_intrinsics.dd)({
-        ...{ class: "kv-value" },
+    /** @type {__VLS_StyleScopedClasses['ticket-extra-label']} */ ;
+    /** @type {__VLS_StyleScopedClasses['ticket-main-label']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "ticket-comment-box" },
     });
-    /** @type {__VLS_StyleScopedClasses['kv-value']} */ ;
-    (__VLS_ctx.detailsQuery.data.value.managerComments || "No comments");
+    /** @type {__VLS_StyleScopedClasses['ticket-comment-box']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({
+        ...{ class: "ticket-comment-value" },
+    });
+    /** @type {__VLS_StyleScopedClasses['ticket-comment-value']} */ ;
+    (__VLS_ctx.ticket.managerComments || "Комментарий пока не добавлен.");
     if (__VLS_ctx.canManage) {
         __VLS_asFunctionalElement1(__VLS_intrinsics.article, __VLS_intrinsics.article)({
-            ...{ class: "panel" },
-            ...{ style: {} },
+            ...{ class: "panel ticket-actions-card" },
         });
         /** @type {__VLS_StyleScopedClasses['panel']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.h2, __VLS_intrinsics.h2)({
-            ...{ class: "section-title" },
-            ...{ style: {} },
+        /** @type {__VLS_StyleScopedClasses['ticket-actions-card']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.header, __VLS_intrinsics.header)({
+            ...{ class: "ticket-actions-header" },
         });
-        /** @type {__VLS_StyleScopedClasses['section-title']} */ ;
+        /** @type {__VLS_StyleScopedClasses['ticket-actions-header']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.h2, __VLS_intrinsics.h2)({
+            ...{ class: "ticket-card-title" },
+        });
+        /** @type {__VLS_StyleScopedClasses['ticket-card-title']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({
+            ...{ class: "muted-text" },
+        });
+        /** @type {__VLS_StyleScopedClasses['muted-text']} */ ;
         __VLS_asFunctionalElement1(__VLS_intrinsics.form, __VLS_intrinsics.form)({
             ...{ onSubmit: (__VLS_ctx.onUpdate) },
-            ...{ class: "stack" },
+            ...{ class: "stack ticket-action-form" },
         });
         /** @type {__VLS_StyleScopedClasses['stack']} */ ;
+        /** @type {__VLS_StyleScopedClasses['ticket-action-form']} */ ;
         __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-            ...{ class: "form-grid" },
+            ...{ class: "status-toggle" },
         });
-        /** @type {__VLS_StyleScopedClasses['form-grid']} */ ;
+        /** @type {__VLS_StyleScopedClasses['status-toggle']} */ ;
         __VLS_asFunctionalElement1(__VLS_intrinsics.label, __VLS_intrinsics.label)({
-            ...{ class: "field" },
+            ...{ class: "status-choice" },
         });
-        /** @type {__VLS_StyleScopedClasses['field']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
-            ...{ class: "field-label" },
-        });
-        /** @type {__VLS_StyleScopedClasses['field-label']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.select, __VLS_intrinsics.select)({
-            value: (__VLS_ctx.updateForm.status),
-            ...{ class: "field-select" },
-        });
-        /** @type {__VLS_StyleScopedClasses['field-select']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.option, __VLS_intrinsics.option)({
+        /** @type {__VLS_StyleScopedClasses['status-choice']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.input)({
+            type: "radio",
             value: (0),
         });
-        __VLS_asFunctionalElement1(__VLS_intrinsics.option, __VLS_intrinsics.option)({
+        (__VLS_ctx.updateForm.status);
+        __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+            ...{ class: "status-pill status-0" },
+        });
+        /** @type {__VLS_StyleScopedClasses['status-pill']} */ ;
+        /** @type {__VLS_StyleScopedClasses['status-0']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.label, __VLS_intrinsics.label)({
+            ...{ class: "status-choice" },
+        });
+        /** @type {__VLS_StyleScopedClasses['status-choice']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.input)({
+            type: "radio",
             value: (1),
         });
-        __VLS_asFunctionalElement1(__VLS_intrinsics.option, __VLS_intrinsics.option)({
+        (__VLS_ctx.updateForm.status);
+        __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+            ...{ class: "status-pill status-1" },
+        });
+        /** @type {__VLS_StyleScopedClasses['status-pill']} */ ;
+        /** @type {__VLS_StyleScopedClasses['status-1']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.label, __VLS_intrinsics.label)({
+            ...{ class: "status-choice" },
+        });
+        /** @type {__VLS_StyleScopedClasses['status-choice']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.input)({
+            type: "radio",
             value: (2),
         });
+        (__VLS_ctx.updateForm.status);
+        __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+            ...{ class: "status-pill status-2" },
+        });
+        /** @type {__VLS_StyleScopedClasses['status-pill']} */ ;
+        /** @type {__VLS_StyleScopedClasses['status-2']} */ ;
         __VLS_asFunctionalElement1(__VLS_intrinsics.label, __VLS_intrinsics.label)({
             ...{ class: "field" },
         });
@@ -474,9 +667,10 @@ else if (__VLS_ctx.detailsQuery.data.value) {
         });
         /** @type {__VLS_StyleScopedClasses['field-textarea']} */ ;
         __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-            ...{ class: "btn-row" },
+            ...{ class: "btn-row ticket-action-buttons" },
         });
         /** @type {__VLS_StyleScopedClasses['btn-row']} */ ;
+        /** @type {__VLS_StyleScopedClasses['ticket-action-buttons']} */ ;
         __VLS_asFunctionalElement1(__VLS_intrinsics.button, __VLS_intrinsics.button)({
             type: "submit",
             ...{ class: "btn btn-primary" },
@@ -485,7 +679,7 @@ else if (__VLS_ctx.detailsQuery.data.value) {
         /** @type {__VLS_StyleScopedClasses['btn']} */ ;
         /** @type {__VLS_StyleScopedClasses['btn-primary']} */ ;
         (__VLS_ctx.updateMutation.isPending.value ? "Сохраняю..." : "Update Ticket");
-        if (__VLS_ctx.routeType === 'account-register') {
+        if (__VLS_ctx.canApproveAccountRegister) {
             __VLS_asFunctionalElement1(__VLS_intrinsics.button, __VLS_intrinsics.button)({
                 ...{ onClick: (__VLS_ctx.onApprove) },
                 type: "button",
@@ -499,6 +693,6 @@ else if (__VLS_ctx.detailsQuery.data.value) {
     }
 }
 // @ts-ignore
-[hasValidParams, detailsError, detailsError, actionError, actionError, actionSuccess, actionSuccess, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, detailsQuery, ticketTypeLabel, ticketStatusLabel, formatDateTime, formatDateTime, formatDateTime, formatMoney, canManage, onUpdate, updateForm, updateForm, updateMutation, updateMutation, routeType, onApprove, approveMutation, approveMutation,];
+[hasValidParams, detailsError, detailsError, actionError, actionError, actionSuccess, actionSuccess, detailsQuery, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticket, ticketTypeLabel, ticketTypeLabel, ticketStatusLabel, ticketStatusLabel, formatDateTime, formatDateTime, formatDateTime, additionalSectionTitle, hasAdditionalPayload, formatMoney, canManage, onUpdate, updateForm, updateForm, updateForm, updateForm, updateMutation, updateMutation, canApproveAccountRegister, onApprove, approveMutation, approveMutation,];
 const __VLS_export = (await import('vue')).defineComponent({});
 export default {};

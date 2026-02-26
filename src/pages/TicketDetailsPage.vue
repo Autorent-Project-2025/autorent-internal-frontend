@@ -35,6 +35,7 @@ const hasValidParams = computed(() => {
 
 const backPath = computed(() => "/internal/tickets");
 const canManage = computed(() => state.isInternal === true);
+const canApproveAccountRegister = computed(() => routeType.value === "account-register");
 
 const updateForm = reactive({
   status: 0,
@@ -129,6 +130,22 @@ const detailsError = computed(() => {
   );
 });
 
+const ticket = computed(() => detailsQuery.data.value ?? null);
+const hasAdditionalPayload = computed(() => {
+  if (!ticket.value) {
+    return false;
+  }
+
+  return (
+    ticket.value.relatedAccount !== null ||
+    ticket.value.bookingId !== null ||
+    ticket.value.withdrawalAmount !== null
+  );
+});
+const additionalSectionTitle = computed(() => {
+  return routeType.value === "account-register" ? "Сведения об аккаунте" : "Дополнительные данные";
+});
+
 async function onUpdate(): Promise<void> {
   actionError.value = "";
   actionSuccess.value = "";
@@ -190,11 +207,11 @@ async function onApprove(): Promise<void> {
 </script>
 
 <template>
-  <section class="page panel" style="padding: 1.2rem">
-    <header class="panel-header">
+  <section class="page panel ticket-details-page">
+    <header class="panel-header ticket-details-header">
       <div>
         <h1 class="section-title">Детали тикета</h1>
-        <p class="section-subtitle">Просмотр деталей и internal-действия по выбранной заявке.</p>
+        <p class="section-subtitle">Карточка заявки и действия внутреннего менеджера.</p>
       </div>
       <RouterLink :to="backPath" class="btn btn-secondary">Назад к списку</RouterLink>
     </header>
@@ -206,108 +223,158 @@ async function onApprove(): Promise<void> {
 
     <div v-if="detailsQuery.isPending.value" class="muted-text">Загружаю детали тикета...</div>
 
-    <div v-else-if="detailsQuery.data.value" class="stack">
-      <div class="detail-grid">
-        <article class="panel" style="padding: 1rem">
-          <h2 class="section-title" style="font-size: 1.2rem; margin-bottom: 0.8rem">Основное</h2>
-          <dl class="kv-list">
-            <div class="kv-row">
-              <dt class="kv-key">ID</dt>
-              <dd class="kv-value">#{{ detailsQuery.data.value.id }}</dd>
+    <div v-else-if="ticket" class="stack">
+      <section class="ticket-overview">
+        <div class="ticket-overview-group">
+          <div class="ticket-overview-item">
+            <span class="ticket-overview-label">Ticket</span>
+            <strong class="ticket-overview-value">#{{ ticket.id }}</strong>
+          </div>
+          <div class="ticket-overview-item">
+            <span class="ticket-overview-label">Type</span>
+            <strong class="ticket-overview-value">{{ ticketTypeLabel(ticket.type) }}</strong>
+          </div>
+        </div>
+
+        <div class="ticket-overview-group">
+          <div class="ticket-overview-item">
+            <span class="ticket-overview-label">Status</span>
+            <strong class="ticket-overview-value">
+              <span class="status-pill" :class="`status-${ticket.status}`">
+                {{ ticketStatusLabel(ticket.status) }}
+              </span>
+            </strong>
+          </div>
+          <div class="ticket-overview-item">
+            <span class="ticket-overview-label">Owner</span>
+            <strong class="ticket-overview-value">{{ ticket.ownerEmail || "Not set" }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <div class="detail-grid ticket-detail-grid">
+        <article class="panel ticket-card">
+          <h2 class="ticket-card-title">Основное</h2>
+          <div class="ticket-extra-grid ticket-main-grid">
+            <div class="ticket-extra-item ticket-main-item">
+              <span class="ticket-extra-label ticket-main-label">ID тикета</span>
+              <strong class="ticket-extra-value ticket-main-value">#{{ ticket.id }}</strong>
             </div>
-            <div class="kv-row">
-              <dt class="kv-key">Title</dt>
-              <dd class="kv-value">{{ detailsQuery.data.value.title }}</dd>
+            <div class="ticket-extra-item ticket-main-item">
+              <span class="ticket-extra-label ticket-main-label">Заголовок</span>
+              <strong class="ticket-extra-value ticket-main-value">{{ ticket.title }}</strong>
             </div>
-            <div class="kv-row">
-              <dt class="kv-key">Description</dt>
-              <dd class="kv-value">{{ detailsQuery.data.value.description }}</dd>
+            <div class="ticket-extra-item ticket-main-item">
+              <span class="ticket-extra-label ticket-main-label">Описание</span>
+              <strong class="ticket-extra-value ticket-main-value">{{ ticket.description }}</strong>
             </div>
-            <div class="kv-row">
-              <dt class="kv-key">Type</dt>
-              <dd class="kv-value">{{ ticketTypeLabel(detailsQuery.data.value.type) }}</dd>
+            <div class="ticket-extra-item ticket-main-item">
+              <span class="ticket-extra-label ticket-main-label">Тип тикета</span>
+              <strong class="ticket-extra-value ticket-main-value">{{ ticketTypeLabel(ticket.type) }}</strong>
             </div>
-            <div class="kv-row">
-              <dt class="kv-key">Status</dt>
-              <dd class="kv-value">
-                <span class="status-pill" :class="`status-${detailsQuery.data.value.status}`">
-                  {{ ticketStatusLabel(detailsQuery.data.value.status) }}
+            <div class="ticket-extra-item ticket-main-item">
+              <span class="ticket-extra-label ticket-main-label">Статус</span>
+              <strong class="ticket-extra-value ticket-main-value ticket-main-value-status">
+                <span class="status-pill" :class="`status-${ticket.status}`">
+                  {{ ticketStatusLabel(ticket.status) }}
                 </span>
-              </dd>
+              </strong>
             </div>
-            <div class="kv-row">
-              <dt class="kv-key">Owner Email</dt>
-              <dd class="kv-value">{{ detailsQuery.data.value.ownerEmail || "Not set" }}</dd>
+            <div class="ticket-extra-item ticket-main-item">
+              <span class="ticket-extra-label ticket-main-label">Email владельца</span>
+              <strong class="ticket-extra-value ticket-main-value">{{ ticket.ownerEmail || "Not set" }}</strong>
             </div>
-            <div class="kv-row">
-              <dt class="kv-key">Created At</dt>
-              <dd class="kv-value">{{ formatDateTime(detailsQuery.data.value.createdAt) }}</dd>
+            <div class="ticket-extra-item ticket-main-item">
+              <span class="ticket-extra-label ticket-main-label">Создан</span>
+              <strong class="ticket-extra-value ticket-main-value">{{ formatDateTime(ticket.createdAt) }}</strong>
             </div>
-            <div class="kv-row">
-              <dt class="kv-key">Updated At</dt>
-              <dd class="kv-value">{{ formatDateTime(detailsQuery.data.value.updatedAt) }}</dd>
+            <div class="ticket-extra-item ticket-main-item">
+              <span class="ticket-extra-label ticket-main-label">Обновлен</span>
+              <strong class="ticket-extra-value ticket-main-value">{{ formatDateTime(ticket.updatedAt) }}</strong>
             </div>
-          </dl>
+          </div>
         </article>
 
-        <article class="panel" style="padding: 1rem">
-          <h2 class="section-title" style="font-size: 1.2rem; margin-bottom: 0.8rem">
-            Дополнительно
-          </h2>
-          <dl class="kv-list">
-            <div v-if="detailsQuery.data.value.relatedAccount" class="kv-row">
-              <dt class="kv-key">relatedAccount</dt>
-              <dd class="kv-value">
-                {{ detailsQuery.data.value.relatedAccount.name }} | ownerUserId:
-                {{ detailsQuery.data.value.relatedAccount.ownerUserId }} | registrationDate:
-                {{ formatDateTime(detailsQuery.data.value.relatedAccount.registrationDate) }}
-              </dd>
+        <article class="panel ticket-card ticket-card-secondary">
+          <h2 class="ticket-card-title">{{ additionalSectionTitle }}</h2>
+          <div v-if="hasAdditionalPayload" class="ticket-extra-grid ticket-main-grid">
+            <template v-if="ticket.relatedAccount">
+              <div class="ticket-extra-item ticket-main-item">
+                <span class="ticket-extra-label ticket-main-label">Название аккаунта</span>
+                <strong class="ticket-extra-value ticket-main-value">{{ ticket.relatedAccount.name }}</strong>
+              </div>
+              <div class="ticket-extra-item ticket-main-item">
+                <span class="ticket-extra-label ticket-main-label">ID владельца аккаунта</span>
+                <strong class="ticket-extra-value ticket-main-value">{{ ticket.relatedAccount.ownerUserId }}</strong>
+              </div>
+              <div class="ticket-extra-item ticket-main-item">
+                <span class="ticket-extra-label ticket-main-label">Дата регистрации аккаунта</span>
+                <strong class="ticket-extra-value ticket-main-value">{{
+                  formatDateTime(ticket.relatedAccount.registrationDate)
+                }}</strong>
+              </div>
+            </template>
+
+            <div v-if="ticket.bookingId !== null" class="ticket-extra-item ticket-main-item">
+              <span class="ticket-extra-label ticket-main-label">ID бронирования</span>
+              <strong class="ticket-extra-value ticket-main-value">{{ ticket.bookingId }}</strong>
             </div>
-            <div v-if="detailsQuery.data.value.bookingId" class="kv-row">
-              <dt class="kv-key">bookingId</dt>
-              <dd class="kv-value">{{ detailsQuery.data.value.bookingId }}</dd>
+
+            <div v-if="ticket.withdrawalAmount !== null" class="ticket-extra-item ticket-main-item">
+              <span class="ticket-extra-label ticket-main-label">Сумма вывода</span>
+              <strong class="ticket-extra-value ticket-main-value">{{
+                formatMoney(ticket.withdrawalAmount)
+              }}</strong>
             </div>
-            <div v-if="detailsQuery.data.value.withdrawalAmount !== null" class="kv-row">
-              <dt class="kv-key">withdrawalAmount</dt>
-              <dd class="kv-value">{{ formatMoney(detailsQuery.data.value.withdrawalAmount) }}</dd>
+          </div>
+
+          <p v-else class="ticket-extra-empty">Для этого типа тикета дополнительные поля отсутствуют.</p>
+
+          <div class="ticket-extra-item ticket-main-item ticket-comment-item">
+            <span class="ticket-extra-label ticket-main-label">Комментарий менеджера</span>
+            <div class="ticket-comment-box">
+              <p class="ticket-comment-value">
+                {{ ticket.managerComments || "Комментарий пока не добавлен." }}
+              </p>
             </div>
-            <div class="kv-row">
-              <dt class="kv-key">managerComments</dt>
-              <dd class="kv-value">{{ detailsQuery.data.value.managerComments || "No comments" }}</dd>
-            </div>
-          </dl>
+          </div>
         </article>
       </div>
 
-      <article v-if="canManage" class="panel" style="padding: 1rem">
-        <h2 class="section-title" style="font-size: 1.2rem; margin-bottom: 0.8rem">
-          Internal Actions
-        </h2>
+      <article v-if="canManage" class="panel ticket-actions-card">
+        <header class="ticket-actions-header">
+          <h2 class="ticket-card-title">Управление тикетом</h2>
+          <p class="muted-text">Комментарий менеджера обязателен для обновления.</p>
+        </header>
 
-        <form class="stack" @submit.prevent="onUpdate">
-          <div class="form-grid">
-            <label class="field">
-              <span class="field-label">Status</span>
-              <select v-model.number="updateForm.status" class="field-select">
-                <option :value="0">Pending</option>
-                <option :value="1">Approved</option>
-                <option :value="2">Declined</option>
-              </select>
+        <form class="stack ticket-action-form" @submit.prevent="onUpdate">
+          <div class="status-toggle">
+            <label class="status-choice">
+              <input v-model.number="updateForm.status" type="radio" :value="0" />
+              <span class="status-pill status-0">Pending</span>
+            </label>
+            <label class="status-choice">
+              <input v-model.number="updateForm.status" type="radio" :value="1" />
+              <span class="status-pill status-1">Approved</span>
+            </label>
+            <label class="status-choice">
+              <input v-model.number="updateForm.status" type="radio" :value="2" />
+              <span class="status-pill status-2">Declined</span>
             </label>
           </div>
 
           <label class="field">
-            <span class="field-label">managerComments (обязательно)</span>
+            <span class="field-label">Комментарий менеджера (обязательно)</span>
             <textarea v-model="updateForm.managerComments" class="field-textarea"></textarea>
           </label>
 
-          <div class="btn-row">
+          <div class="btn-row ticket-action-buttons">
             <button type="submit" class="btn btn-primary" :disabled="updateMutation.isPending.value">
               {{ updateMutation.isPending.value ? "Сохраняю..." : "Update Ticket" }}
             </button>
 
             <button
-              v-if="routeType === 'account-register'"
+              v-if="canApproveAccountRegister"
               type="button"
               class="btn btn-danger"
               :disabled="approveMutation.isPending.value"
