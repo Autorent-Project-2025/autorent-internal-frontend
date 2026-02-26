@@ -1,4 +1,4 @@
-name: Deploy to Github pages
+name: Deploy to GitHub Pages
 
 on:
   release:
@@ -19,9 +19,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: production
-    defaults:
-      run:
-        working-directory: autorent-frontend
     env:
       VITE_API_URL: ${{ vars.VITE_API_URL }}
 
@@ -32,9 +29,12 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
           cache: npm
-          cache-dependency-path: autorent-frontend/package-lock.json
+          cache-dependency-path: package-lock.json
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
 
       - name: Install dependencies
         run: npm ci
@@ -45,7 +45,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: autorent-frontend/dist
+          path: dist
 
   deploy:
     environment:
