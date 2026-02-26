@@ -30,7 +30,7 @@ function logout(): void {
       </div>
 
       <nav v-if="state.isInternal" class="topbar-nav">
-        <RouterLink to="/internal/tickets">Тикеты</RouterLink>
+        <RouterLink to="/internal/tickets" class="tickets-link">Тикеты</RouterLink>
       </nav>
 
       <button type="button" class="btn btn-ghost" @click="logout">Выйти</button>

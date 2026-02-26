@@ -71,10 +71,13 @@ if (__VLS_ctx.isAuthenticated && !__VLS_ctx.hideTopbar) {
         // @ts-ignore
         const __VLS_7 = __VLS_asFunctionalComponent1(__VLS_6, new __VLS_6({
             to: "/internal/tickets",
+            ...{ class: "tickets-link" },
         }));
         const __VLS_8 = __VLS_7({
             to: "/internal/tickets",
+            ...{ class: "tickets-link" },
         }, ...__VLS_functionalComponentArgsRest(__VLS_7));
+        /** @type {__VLS_StyleScopedClasses['tickets-link']} */ ;
         const { default: __VLS_11 } = __VLS_9.slots;
         // @ts-ignore
         [state,];
